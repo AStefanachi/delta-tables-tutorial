@@ -16,7 +16,7 @@
 # DBTITLE 1,Settings SAS Token
 # Define the Delta table name and path
 TABLE_NAME =  "current"
-TABLE_PATH = f"wasbs://{DLS_CONTAINER}@{STORAGE_ACCOUNT_NAME}.blob.core.windows.net/" \
+TABLE_PATH = f"abfss://{DLS_CONTAINER}@{STORAGE_ACCOUNT_NAME}.blob.core.windows.net/" \
     f"weather_api/current/{TABLE_NAME}"
 
 # Setting SAS Configuration
@@ -43,13 +43,13 @@ fi_path_delta_log
 
 # DBTITLE 1,Transaction log
 # What's inside a transaction file?
-spark.read.json(f"wasbs://dls@{STORAGE_ACCOUNT_NAME}.blob.core.windows.net/weather_api/current/current/_delta_log/00000000000000000018.json").display()
+spark.read.json(f"abfss://dls@{STORAGE_ACCOUNT_NAME}.blob.core.windows.net/weather_api/current/current/_delta_log/00000000000000000018.json").display()
 
 # COMMAND ----------
 
 # DBTITLE 1,Checkpoint file
 # What's inside a checkpoint file?
-spark.read.parquet(f"wasbs://dls@{STORAGE_ACCOUNT_NAME}.blob.core.windows.net/weather_api/current/current/_delta_log/00000000000000000010.checkpoint.parquet").display()
+spark.read.parquet(f"abfss://dls@{STORAGE_ACCOUNT_NAME}.blob.core.windows.net/weather_api/current/current/_delta_log/00000000000000000010.checkpoint.parquet").display()
 
 # COMMAND ----------
 
