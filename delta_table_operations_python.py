@@ -85,7 +85,7 @@ deltaTable.toDF().select('location_localtime').where("location_localtime < '2023
 # COMMAND ----------
 
 # DBTITLE 1,Display table version history to identify transactions
-deltaTable.history().where('version < 20').display()
+deltaTable.history().display()
 
 # COMMAND ----------
 
