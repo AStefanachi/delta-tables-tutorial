@@ -64,8 +64,9 @@ TABLE_PATH = f"abfss://{DLS_CONTAINER}@{STORAGE_ACCOUNT_NAME}.blob.core.windows.
     f"weather_api/current/{TABLE_NAME}"
 
 # Setting SAS Configuration
-spark.conf.set(f"fs.azure.account.auth.type.{STORAGE_ACCOUNT_NAME}.blob.core.windows.net", "SAS")
-spark.conf.set(f"fs.azure.sas.{DLS_CONTAINER}.{STORAGE_ACCOUNT_NAME}.blob.core.windows.net", STORAGE_ACCOUNT_SAS_TOKEN)
+spark.conf.set(f"fs.azure.account.auth.type.{STORAGE_ACCOUNT_NAME}.dfs.core.windows.net", "SAS")
+spark.conf.set(f"fs.azure.sas.token.provider.type.{STORAGE_ACCOUNT_NAME}.dfs.core.windows.net", "org.apache.hadoop.fs.azurebfs.sas.FixedSASTokenProvider")
+spark.conf.set(f"fs.azure.sas.fixed.token.{STORAGE_ACCOUNT_NAME}.dfs.core.windows.net", STORAGE_ACCOUNT_SAS_TOKEN)
 
 # Selecting df in order
 cities_df_union = cities_df_union.select(cities_df_union.columns)
