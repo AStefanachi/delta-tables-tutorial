@@ -16,12 +16,13 @@
 # DBTITLE 1,Settings SAS Token
 # Define the Delta table name and path
 TABLE_NAME =  "current"
-TABLE_PATH = f"abfss://{DLS_CONTAINER}@{STORAGE_ACCOUNT_NAME}.blob.core.windows.net/" \
+TABLE_PATH = f"abfss://{DLS_CONTAINER}@{STORAGE_ACCOUNT_NAME}.dfs.core.windows.net/" \
     f"weather_api/current/{TABLE_NAME}"
 
-# Setting SAS Configuration
-spark.conf.set(f"fs.azure.account.auth.type.{STORAGE_ACCOUNT_NAME}.blob.core.windows.net", "SAS")
-spark.conf.set(f"fs.azure.sas.{DLS_CONTAINER}.{STORAGE_ACCOUNT_NAME}.blob.core.windows.net", STORAGE_ACCOUNT_SAS_TOKEN)
+# # Setting SAS Configuration
+spark.conf.set(f"fs.azure.account.auth.type.{STORAGE_ACCOUNT_NAME}.dfs.core.windows.net", "SAS")
+spark.conf.set(f"fs.azure.sas.token.provider.type.{STORAGE_ACCOUNT_NAME}.dfs.core.windows.net", "org.apache.hadoop.fs.azurebfs.sas.FixedSASTokenProvider")
+spark.conf.set(f"fs.azure.sas.fixed.token.{STORAGE_ACCOUNT_NAME}.dfs.core.windows.net", STORAGE_ACCOUNT_SAS_TOKEN)
 
 # COMMAND ----------
 
@@ -43,13 +44,13 @@ fi_path_delta_log
 
 # DBTITLE 1,Transaction log
 # What's inside a transaction file?
-spark.read.json(f"abfss://dls@{STORAGE_ACCOUNT_NAME}.blob.core.windows.net/weather_api/current/current/_delta_log/00000000000000000018.json").display()
+spark.read.json(f"abfss://dls@{STORAGE_ACCOUNT_NAME}.dfs.core.windows.net/weather_api/current/current/_delta_log/00000000000000000018.json").display()
 
 # COMMAND ----------
 
 # DBTITLE 1,Checkpoint file
 # What's inside a checkpoint file?
-spark.read.parquet(f"abfss://dls@{STORAGE_ACCOUNT_NAME}.blob.core.windows.net/weather_api/current/current/_delta_log/00000000000000000010.checkpoint.parquet").display()
+spark.read.parquet(f"abfss://dls@{STORAGE_ACCOUNT_NAME}.dfs.core.windows.net/weather_api/current/current/_delta_log/00000000000000000010.checkpoint.parquet").display()
 
 # COMMAND ----------
 
@@ -73,14 +74,14 @@ deltaTable.detail().display()
 
 # COMMAND ----------
 
-# DBTITLE 1,Deleting rows according to a SQL formatted condition
+# DBTITLE 1,Deleting all rows
 # We simulate an human error, which will delete all records
-deltaTable.delete("location_localtime <= '2023-07-19 6:52'")
+deltaTable.delete()
 
 # COMMAND ----------
 
 # DBTITLE 1,Confirming Deletion
-deltaTable.toDF().select('location_localtime').where("location_localtime < '2023-07-19 6:52'").count()
+deltaTable.toDF().count()
 
 # COMMAND ----------
 
@@ -90,7 +91,8 @@ deltaTable.history().display()
 # COMMAND ----------
 
 # DBTITLE 1,Checking differences between table versions
-# Version 18: before deleting the 19/07/2023
+# In my case, version 18 is the most recent one with all the data I lost.
+# Version 18: before delete
 # Version 19: after delete
 version19 = spark.read.option('versionAsOf', 19).table('bronze_weather.current')
 version18 = spark.read.option('versionAsOf', 18).table('bronze_weather.current')
