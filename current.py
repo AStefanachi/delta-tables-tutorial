@@ -60,7 +60,7 @@ spark.sql("CREATE SCHEMA IF NOT EXISTS bronze_weather")
 # DBTITLE 1,Create delta table on a storage account in append mode to build history
 # Define the Delta table name and path
 TABLE_NAME =  "current"
-TABLE_PATH = f"abfss://{DLS_CONTAINER}@{STORAGE_ACCOUNT_NAME}.blob.core.windows.net/" \
+TABLE_PATH = f"abfss://{DLS_CONTAINER}@{STORAGE_ACCOUNT_NAME}.dfs.core.windows.net/" \
     f"weather_api/current/{TABLE_NAME}"
 
 # Setting SAS Configuration
